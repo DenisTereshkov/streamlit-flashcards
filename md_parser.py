@@ -44,9 +44,13 @@ def parse_questions(content: str) -> List[Dict]:
     current_full_answer = []
     in_short_answer = False
     in_full_answer = False
+    in_code_block = False
     for line in lines:
         line = line.rstrip()
-        if line.startswith('### '):
+        if line.strip().startswith('```'):
+            in_code_block = not in_code_block
+
+        if line.startswith('### ') and not in_code_block:
             if current_question is not None:
                 questions.append({
                     'question': current_question,
@@ -58,10 +62,10 @@ def parse_questions(content: str) -> List[Dict]:
             current_full_answer = []
             in_short_answer = False
             in_full_answer = False
-        elif line.startswith('#### Короткий ответ'):
+        elif line.startswith('#### Короткий ответ') and not in_code_block:
             in_short_answer = True
             in_full_answer = False
-        elif line.startswith('#### Развернутый ответ'):
+        elif line.startswith('#### Развернутый ответ') and not in_code_block:
             in_short_answer = False
             in_full_answer = True
         elif current_question is not None and line:

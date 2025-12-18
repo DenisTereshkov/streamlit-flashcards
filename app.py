@@ -13,6 +13,14 @@ if 'q_index' not in st.session_state:
 
 
 md_files = get_markdown_files()
+if not st.session_state.selected_file and md_files:
+    first_file = md_files[0]
+    content = first_file.read_text(encoding='utf-8')
+    questions = parse_questions(content)
+    st.session_state.selected_file = first_file
+    st.session_state.questions = questions
+    st.session_state.q_index = 0
+
 
 # САЙДБАР
 with st.sidebar:
@@ -20,25 +28,32 @@ with st.sidebar:
 
     for file_path in md_files:
         file_name = file_path.stem
-
-        if st.button(file_name, key=f"btn_{file_name}"):
+        with st.expander(f"{file_name}", expanded=False):
             content = file_path.read_text(encoding='utf-8')
             questions = parse_questions(content)
-
-            st.session_state.selected_file = file_path
-            st.session_state.questions = questions
-            st.session_state.q_index = 0
-            st.rerun()
-
-    if st.session_state.selected_file:
-        st.markdown("---")
-        for i, q in enumerate(st.session_state.questions):
-            if st.button(f"{i+1}. {q['question']}", key=f"q_btn_{i}", type="tertiary"):
-                st.session_state.q_index = i
-                st.rerun()
+            for i, q in enumerate(questions):
+                q_text = q['question']
+                if st.button(
+                    f"• {q_text}",
+                    key=f"{file_name}_q{i}",
+                    type="secondary" if st.session_state.selected_file != file_path or st.session_state.q_index != i else "primary",
+                    use_container_width=True
+                ):
+                    st.session_state.selected_file = file_path
+                    st.session_state.questions = questions
+                    st.session_state.q_index = i
+                    st.session_state.show_answer = False
+                    st.rerun()
 
 # ОСНОВНАЯ ЗОНА
-st.title("Вопрос")
+if st.session_state.selected_file:
+    file_name = st.session_state.selected_file.stem
+    current_idx = st.session_state.q_index
+    total_questions = len(st.session_state.questions)
+    page_title = f"{file_name}"
+    st.title(page_title)
+else:
+    st.title("Карточки для обучения")
 
 if not st.session_state.selected_file:
     st.info("Выберите тему слева")
@@ -57,6 +72,7 @@ else:
         with col1:
             if st.button("◀ Назад") and idx > 0:
                 st.session_state.q_index = idx - 1
+                st.session_state.show_answer = False
                 st.rerun()
 
         with col2:
@@ -77,6 +93,7 @@ else:
         with col3:
             if st.button("Вперед ▶") and idx < len(questions) - 1:
                 st.session_state.q_index = idx + 1
+                st.session_state.show_answer = False
                 st.rerun()
 
         if st.session_state.show_answer:
