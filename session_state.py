@@ -15,23 +15,6 @@ def init_session_state():
             st.session_state[key] = value
 
 
-def auto_select_first_file(md_files):
-    """
-    Автоматически выбирает первый файл при запуске
-    Args:
-        md_files: список Path объектов
-    """
-    from md_parser import parse_questions
-    if not st.session_state.selected_file and md_files:
-        first_file = md_files[0]
-        content = first_file.read_text(encoding='utf-8')
-        questions = parse_questions(content)
-        st.session_state.selected_file = first_file
-        st.session_state.questions = questions
-        st.session_state.q_index = 0
-        st.session_state.show_answer = False
-
-
 def update_selected_file(file_path, questions, index=0):
     """
     Обновляет выбранный файл и вопросы
