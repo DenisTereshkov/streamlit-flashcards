@@ -50,8 +50,8 @@ def render_questions_list(file_path, file_name):
 def render_question_button(file_path, file_name, question, index, questions):
     """Рендерит кнопку для одного вопроса"""
     q_text = question['question']
-    if len(q_text) > 30:
-        q_text = q_text[:30] + "..."
+    if len(q_text) > 50:
+        q_text = q_text[:50] + "..."
     btn_type = get_button_type(file_path, index)
     if st.button(
         f"• {q_text}",
