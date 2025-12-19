@@ -17,9 +17,23 @@ def render_main_content():
 
 
 def render_welcome_screen():
-    """Экран приветствия (когда файл не выбран)"""
-    st.title("Карточки для обучения")
-    st.info("Выберите тему в боковой панели")
+    """Главная страница из отдельного файла"""
+    home_content = load_home_content()
+    st.markdown(home_content, unsafe_allow_html=True)
+    st.markdown("---")
+    
+
+def load_home_content():
+    """Загружает содержимое главной страницы"""
+    try:
+        with open("content/home_page.md", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        return """
+        #Карточки для обучения
+        
+        Добро пожаловать! Выберите тему в боковой панели.
+        """
 
 
 def render_question_screen():
