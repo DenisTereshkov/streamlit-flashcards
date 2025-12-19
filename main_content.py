@@ -21,7 +21,7 @@ def render_welcome_screen():
     home_content = load_home_content()
     st.markdown(home_content, unsafe_allow_html=True)
     st.markdown("---")
-    
+
 
 def load_home_content():
     """Загружает содержимое главной страницы"""
@@ -31,7 +31,7 @@ def load_home_content():
     except FileNotFoundError:
         return """
         #Карточки для обучения
-        
+
         Добро пожаловать! Выберите тему в боковой панели.
         """
 
@@ -66,24 +66,37 @@ def render_question_card():
     """Карточка с вопросом"""
     q = get_current_question()
     if q:
-        st.info(q['question'])
+        with st.container():
+            st.markdown(f"""
+                <div style='
+                    background: #10B981;
+                    padding: 20px;
+                    border-radius: 8px;
+                    font-size: 22px;
+                    margin: 15px 0;
+                    color: #F1F5F9;
+                '>
+                {q['question']}
+                </div>
+                """, unsafe_allow_html=True)
 
 
 def render_navigation_panel():
     """Панель навигации с кнопками"""
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns([2, 3, 2], vertical_alignment="center")
     with col1:
         render_previous_button()
     with col2:
         render_answer_toggle()
     with col3:
         render_next_button()
+    st.markdown("---")
 
 
 def render_previous_button():
     """Кнопка 'Назад'"""
     idx = st.session_state.q_index
-    if st.button("◀ Назад", disabled=idx == 0):
+    if st.button("◀ Назад", disabled=idx == 0, use_container_width=True):
         navigate_to_previous_question()
         st.rerun()
 
@@ -92,7 +105,11 @@ def render_next_button():
     """Кнопка 'Вперед'"""
     idx = st.session_state.q_index
     questions = st.session_state.questions
-    if st.button("Вперед ▶", disabled=(idx >= len(questions) - 1)):
+    if st.button(
+        "Вперед ▶",
+        disabled=(idx >= len(questions) - 1),
+        use_container_width=True
+    ):
         navigate_to_next_question()
         st.rerun()
 
@@ -100,8 +117,8 @@ def render_next_button():
 def render_answer_toggle():
     """Кнопка показа/скрытия ответа"""
     btn_text = get_answer_button_text()
-    btn_type = "secondary"
-    if st.button(btn_text, type=btn_type):
+    btn_type = "primary"
+    if st.button(btn_text, type=btn_type, use_container_width=True):
         toggle_answer()
         st.rerun()
 
@@ -120,9 +137,9 @@ def render_answer_section():
     q = get_current_question()
     if not q:
         return
-    st.markdown("---")
     if q.get('short_answer'):
         render_short_answer(q['short_answer'])
+    st.markdown("---")
     if q.get('full_answer'):
         render_full_answer(q['full_answer'])
 

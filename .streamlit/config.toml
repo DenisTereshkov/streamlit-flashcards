@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#10B981"      # Зелёный акцент (для кнопок показать/скрыть)
+backgroundColor = "#1F2937"   # Угольный фон
+secondaryBackgroundColor = "#374151"  # Серые карточки
+textColor = "#D1D5DB"         # Светло-серый текст
+font = "Segoe UI, sans-serif"
